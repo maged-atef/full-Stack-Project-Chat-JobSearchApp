@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login</title>
+  <link rel="stylesheet" href="./stylingCSS/bootstrap.min.css">
+  <link rel="stylesheet" href="./stylingCSS/all.min.css">
+  <link rel="stylesheet" href="./stylingCSS/styles.css" />
+</head>
+
+<body>
+  <div class="container">
+    <h2>Login</h2>
+    <div class="mb-2">
+      
+      <input type="email" id="email" class="form-control" placeholder="Email" />
+    </div>
+    <div class=" mb-2">
+      <input type="password" id="password" class="form-control" placeholder="Password" />
+    </div>
+    <div class="mb-2">
+      <button id="login-button" class="form-control my-2 btn-success">Login</button>
+    </div>
+  </div>
+  <script src="./JS Files/all.min.js"></script>
+  <script src="./JS Files/bootstrap.min.js"></script>
+  <script>
+
+
+    document.getElementById("login-button").addEventListener("click", () => {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+
+      fetch("http://localhost:3000/user/signin", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password }), })
+        .then((response) => {
+          console.log(response)
+          return response.json()
+
+        })
+        .then((json) => {
+          console.log(json.Acesstoken)
+          console.log(json.success);
+          console.log(json.msg);
+          if (json.success) {
+            localStorage.setItem("token", json.Acesstoken);
+            localStorage.setItem("username", json.username);
+            window.location.href = "chat.html";
+          } else {
+            alert("Login failed");
+          }
+        })
+        .catch((err) => console.error("Login error:", err));
+    });
+  </script>
+</body>
+
+</html>

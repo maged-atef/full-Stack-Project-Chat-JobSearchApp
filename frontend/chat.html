@@ -1,0 +1,184 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chat</title>
+  <!-- <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script> -->
+  <link rel="stylesheet" href="./stylingCSS/bootstrap.min.css">
+  <link rel="stylesheet" href="./stylingCSS/all.min.css">
+  <link rel="stylesheet" href="./stylingCSS/styles.css" />
+</head>
+
+<body>
+  <h3 class="top">Welcome, <span id="username-display"></span></h3>
+
+  <div class="chat-container">
+
+    <div class="sidebar " id="sidebar">
+      <h3>Online Users</h3>
+      <ul id="user-list"></ul>
+    </div>
+
+    <div class="icon-online-users">
+      <button id="online"><i class="fa-solid fa-user"></i></button>
+    </div>
+
+
+    <div class="chat-box">
+      <div id="chat-window"></div>
+      <input type="text" id="message-box" placeholder="Your message..." />
+      <button id="send-button">Send</button>
+
+    </div>
+    <div class="logout">
+      <button id="icon-logout"> <i class="fa-solid fa-right-from-bracket"></i></button>
+    </div>
+
+
+  </div>
+
+  <div>
+    <button id="logout-button">Logout</button>
+  </div>
+
+
+  <script src="./JS Files/all.min.js"></script>
+  <script src="./JS Files/bootstrap.min.js"></script>
+  <script src="./node_modules/socket.io-client/dist/socket.io.min.js"></script>
+  <script>
+    const socket = io("http://localhost:3000", {
+      auth: { token: localStorage.getItem("token") },
+      // info: {name:"migo", age:24}
+    });
+
+    socket.on("connect", () => {
+      console.log("Connected to backend successfully!");
+    });
+
+    const onlineUsers = [];
+    const userList = document.getElementById("user-list");
+    const messageBox = document.getElementById("message-box");
+    const sendButton = document.getElementById("send-button");
+    const logoutButton = document.getElementById("logout-button");
+    const chatWindow = document.getElementById("chat-window");
+    const usernameDisplay = document.getElementById("username-display");
+    const iconlogout = document.getElementById("icon-logout");
+    const btnonline = document.getElementById("online");
+    const sidebar = document.getElementById("sidebar");
+
+
+    let user = localStorage.getItem("username");
+    let token = localStorage.getItem("token");
+
+
+    // socket.auth = { email, password };
+    // socket.connect();
+
+    if (!user) {
+      window.location.href = "login.html";
+    } else {
+      usernameDisplay.textContent = user;
+    }
+
+    // Send btn event
+    sendButton.addEventListener("click", () => {
+      const message = messageBox.value;
+
+      if (message.trim()) {
+        // socket.emit("message", { sender: user, text: message });
+        const p = document.createElement("p");
+        p.textContent = `you: ${message}`;
+        chatWindow.appendChild(p);
+        const userID = document.querySelector("h4").id;
+        socket.emit("private-message", {
+          message,
+          to: userID,
+        });
+        messageBox.value = "";
+      }
+    });
+
+    // * ==========> listen all online users 
+    socket.on("users", (onlineUsers) => {
+      userList.innerHTML = "";
+      onlineUsers.forEach((user) => {
+        const li = document.createElement("li");
+        li.textContent = user.username;
+        li.id = `${user.socketId}`;
+
+        li.addEventListener("click", () => {
+          chatWindow.innerHTML = "";
+          const h4 = document.createElement("h4");
+          h4.textContent = `${user.username}`;
+          h4.id = `${user.socketId}`;
+          chatWindow.appendChild(h4);
+        });
+
+        userList.appendChild(li);
+      });
+    });
+
+    // msg for online user login
+    socket.on("user_connected", (user) => {
+      alert(`User ${user.username} is online now!`);
+    });
+
+    // * ==========> listen all disconnected users 
+    socket.on("user_disconnected", (user) => {
+      const userElement = document.getElementById(`${user.socketId}`);
+      if (userElement) {
+        userElement.remove();
+      }
+      alert(`User ${user.username} is offline now!`);
+    });
+
+    //* ==========> listen error
+    socket.on("connect_error", (err) => {
+      console.log({ err });
+    });
+
+    socket.onAny((event, ...args) => {
+      console.log(event, args);
+    });
+
+    // * listen private msg
+    socket.on("private-message", ({ message, from }) => {
+      const p = document.createElement("p");
+      p.textContent = `${from}: ${message}`;
+      chatWindow.appendChild(p);
+    });
+
+    // * set local storage 
+    logoutButton.addEventListener("click", () => {
+      const usertoken = localStorage.getItem("token");
+      // emit event "disconnect"
+      socket.disconnect(); // disconnect socket from backend
+      localStorage.removeItem("token");
+      localStorage.removeItem("username");
+      window.location.href = "login.html";
+    });
+
+    iconlogout.addEventListener("click", () => {
+      const usertoken = localStorage.getItem("token");
+      // emit event "disconnect"
+      socket.disconnect(); // disconnect socket from backend
+      localStorage.removeItem("token");
+      localStorage.removeItem("username");
+      window.location.href = "login.html";
+    });
+
+    btnonline.addEventListener("click", () => {
+      console.log('show hide btn')
+      if (sidebar.classList.contains('hide')) {
+        sidebar.classList.remove('hide')
+        sidebar.classList.add('show')
+      } else {
+        sidebar.classList.remove('show')
+        sidebar.classList.add('hide')
+      }
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,11 @@
+# Ignore uploaded files
+/uploads
+
+# Ignore dependencies
+/node_modules
+
+# ignore Vercel deployment files
+.vercel
+
+# Ignore environment variables
+.env

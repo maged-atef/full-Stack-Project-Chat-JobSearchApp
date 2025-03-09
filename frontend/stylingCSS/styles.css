@@ -1,0 +1,147 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #f4f4f4;
+
+}
+.container {
+  text-align: center;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+li {
+  cursor: pointer;
+}
+
+.top {
+  position: absolute; /* Allows precise positioning */
+  top: 10px; /* Position it 10px from the top of the page */
+  left: 50%; /* Center horizontally */
+  transform: translateX(-50%); /* Adjust for actual center alignment */
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+}
+.chat-container {
+  display: flex;
+  flex-wrap: wrap;
+  width: 80%;
+  height: 500px;
+  border: 1px solid #ccc;
+}
+.sidebar {
+  width: 200px;
+  background: #2c1a3a;
+  color: white;
+  padding: 10px;
+}
+.chat-box {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  background: white;
+ 
+}
+#chat-window {
+  flex: 1;
+  overflow-y: auto;
+  border-bottom: 1px solid #ccc;
+  padding: 10px;
+
+
+}
+#message-box {
+  width: calc(100% - 60px);
+  padding: 10px;
+  margin-top: 10px;
+  margin-bottom: 1rem;
+  width: 100%;
+}
+#send-button {
+  padding: 10px;
+  background: #4caf50;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+#logout-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 10px 20px;
+  background-color: #4b0082; /* Dark purple */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+#logout-button:hover {
+  background-color: #6a0dad; /* Slightly lighter purple */
+}
+
+.mb-2{
+  margin : 1rem 
+}
+.hide{
+  display: none;
+}
+.show{
+  display: block;
+}
+.logout{
+  display: none;
+  cursor: pointer;
+}
+@media screen and (max-width: 600px){
+    .top{ 
+      font-size: 1rem ;
+    }
+    .sidebar{ 
+      width: 25%;
+      font-size: 1rem;
+    }
+    .sidebar h3{ 
+      font-size: 1rem;
+    }
+    .sidebar ul { 
+      margin-left: 0;
+      padding-left:0 ;
+    }
+    #message-box{ 
+      width: 100%;
+      margin-bottom: 10px ;
+    }
+    #online{
+      display: block;
+    }
+    #send-button{ 
+      width: 100;
+    }
+    .icon-online-users{
+      display: block;
+      position: absolute;
+      top: 2rem;
+      left: 1rem;
+    }
+    #logout-button{ 
+      display: none;
+    }
+    .logout{
+      display: block;
+      position: absolute;
+      top: 2rem;
+      right: 1rem;
+    }
+}
