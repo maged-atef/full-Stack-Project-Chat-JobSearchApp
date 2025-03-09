@@ -74,8 +74,12 @@ MAIL_SECURE =
 
 5. ## [POSTMAN documentation](https://documenter.getpostman.com/view/36638852/2sAYdoEmni#4df10acf-9964-4dc0-9ad4-55bc8d2a2fa7)
 
-6. ## GraphQL Request 1️⃣ use post man to create new GraphQL request
-                      2️⃣ http://localhost:3000/graphql
+6. ## GraphQL Request
+  ```sh
+   1️⃣ use post man to create new GraphQL request
+   2️⃣ http://localhost:3000/graphql
+  ```
+8. 
 
 
 ## Dependencies
