@@ -30,11 +30,47 @@ Ensure you have **Node.js** and **MongoDB** installed on your system.
    npm install
    ```
 
-3. Start the application: ➡ naviaget to /backend then type
-
+3. Start the application backend side: ➡ naviaget to /backend then type
+```sh
+   cd /backend
    npm run start  
- 
+ ```
 
+⛔ create .env file on backend folder 
+```sh
+   
+# Database Info
+MONGODB_URI = 
+
+# Google Login authentication
+CLIENT_ID = 
+CLIENT_SECRET = 
+
+# Express Info
+HOST = http://127.0.0.1:3000/
+EXPRESSPORT = 3000
+
+# App Name
+APPNAME= 
+
+# Hashing
+SECRETKEY = 
+
+
+# Google Authentication for Send Mail 
+
+USER = 
+PASS = 
+MAIL_HOST = 
+MAIL_PORT = 
+MAIL_SECURE = 
+
+```
+4. Start the application frontend side : ➡ naviaget to /frontend then type
+```sh
+   cd /frontend
+   npm install
+ ```
 
 
 
