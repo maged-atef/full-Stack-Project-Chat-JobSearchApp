@@ -1,9 +1,9 @@
 
 import joi from 'joi';
 
-const jobLocation_option =['onsite', 'remotely', 'hybrid']
-const workingTime_option =['part-time', 'full-time']
-const level_option =['Junior', 'Mid-Level', 'Senior', 'Team-Lead', 'CTO']
+export const jobLocation_option =['onsite', 'remotely', 'hybrid']
+export const workingTime_option =['part-time', 'full-time']
+export const level_option =['Junior', 'Mid-Level', 'Senior', 'Team-Lead', 'CTO']
 export const addJobValidation = {
     body: joi.object({
         jobTitle: joi.string().min(3).max(30).required(),

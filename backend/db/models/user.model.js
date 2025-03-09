@@ -1,17 +1,23 @@
 
 
 import { Schema, Types, model } from "mongoose";
+import { gnder_option, provider_option, role_option } from "../../src/modules/user/userValidation.js";
+
+
+//^ variables global 
+
+
 
 const userSchema = new Schema({
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    provider: { type: String, required: true, enum: ['google', 'system'], default: "system" },
-    gender: { type: String, enum: ['male', 'female']},
+    provider: { type: String, required: true, enum: [...provider_option], default: "system" },
+    gender: { type: String, enum: [...gnder_option]},
     DOB: { type: Date, required: true },
     mobileNumber: { type: String, required:true },
-    role: { type: String, enum: ['User', 'admin'], required: true },
+    role: { type: String, enum: [...role_option], required: true },
     confirmed: { type: Boolean, default: false },
     deletedAt: { type: Date, default: null },
     bannedAt: { type: Date, default: null },

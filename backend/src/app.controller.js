@@ -18,8 +18,21 @@ import { sendMail } from './service/email.js';
 
 // *---> Start App Here
 export const bootstrap = async (app, express) => {
+
+
+    // ^ Variables Global 
+     const methods_Allowed = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']
+     const allowed_Headers =["content-type", "Authorization"]
+     const rate_Limit_window =15 * 60 * 1000; 
+     const max_Request= 100; 
+     const rate_Limiter_msg ="Too many Requests from your IP , please try again "
+     const rate_Limiter_origin ="*"
+
+
+
+
     // ^Connect Db
-    connectiontDB();
+    await connectiontDB();
 
     // ^middle ware 
 
@@ -33,23 +46,27 @@ export const bootstrap = async (app, express) => {
     app.use(express.json());
     app.use(helmet())
     app.use(cors({
-        origin: "*",
-        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-        allowedHeaders: ["content-type", "Authorization"]
+        origin: rate_Limiter_origin,
+        methods: [...methods_Allowed],
+        allowedHeaders: [...allowed_Headers]
     }));
     const limiter = rateLimit({
-        window: 15 * 60 * 1000,
-        max: 100,
-        message: "Too many Requests from your IP , please try again "
+        window: rate_Limit_window,
+        max: max_Request,
+        message: rate_Limiter_msg
     });
     app.use(limiter)
     app.use(async (req ,res ,next)=>{
-        await sendMail(process.env.EMAIL,process.env.SUBJECT,process.env.NOTE)
+        
+        if(req.method == methods_Allowed[1]){
+            await sendMail(process.env.EMAIL,process.env.SUBJECT,`${process.env.Note} 🟢  ${req.url} ⚡ ${JSON.stringify(req.body)}}`)
+            
+        }
         return next() 
     })
     // Session middleware
     app.use(session({
-        secret: "your_secret_key",
+        secret:process.env.SECRETKEY,
         resave: false,
         saveUninitialized: true
     }));
@@ -68,7 +85,7 @@ export const bootstrap = async (app, express) => {
 
     // * Not Found API 
     app.use('*', (req, res, next) => {
-        // Handle invalid requests
+      
         const err = new Error(`Invalid request ${req.originalUrl}`);
         next(err);
     });

@@ -1,8 +1,8 @@
 import Joi from 'joi';
 
-const gnder_option = ['male' ,'female'];
-const role_option=['User', 'admin', 'Guest']
-const provider_option =['google', 'system']
+export const gnder_option = ['male' ,'female'];
+export const role_option=['User', 'admin', 'Guest']
+export const provider_option =['google', 'system']
 
 
 //* --->> Signup validation

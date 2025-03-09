@@ -1,7 +1,6 @@
 // *===> import Express, Bootstrap
 import express from 'express';
 import { bootstrap } from './src/app.controller.js';
-import { createServer } from 'http';
 import './db/connectionDB.js';
 import './Utility/cronOTP.js'
 import { Server } from 'socket.io';
@@ -17,7 +16,7 @@ import User from './db/models/user.model.js';
     // *===> Express Listeneing on Port 
     const expressServer = app.listen(port, () => {
         console.log(`----------------Connection Checks--------------------`)
-        console.log(`✔ Express Server Running on port ${port}! `)
+        console.log(`✔ 🟢 Express Server Running on port ${port}! `)
     }
     );
     // ^--------> app start from here 
@@ -43,13 +42,7 @@ import User from './db/models/user.model.js';
         next()
     })
     io.on("connection", (socket) => {
-        console.log('backend connected to front')
-        console.log("Socket id : ", socket.id) //always change ??? 
-        console.log("id user: ", socket.userid)
-        console.log("username : ", socket.username)
-        console.log("handShake : ", socket.handshake.auth.token)
         
-    
         // *----------<< all connected users
         const allSockets_connected = io.of('/').sockets
       

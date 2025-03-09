@@ -1,11 +1,15 @@
 
 import { Schema, model, Types } from "mongoose";
+import { jobLocation_option, level_option, workingTime_option } from "../../src/modules/job/jobValidation.js";
+
+
+// ^Variables Globale 
 
 const jobSchema = new Schema({
     jobTitle: { type: String, required: true },
-    jobLocation: { type: String, enum: ['onsite', 'remotely', 'hybrid'], required: true },
-    workingTime: { type: String, enum: ['part-time', 'full-time'], required: true },
-    seniorityLevel: { type: String, enum: ['Fresh','Junior', 'Mid-Level', 'Senior', 'Team-Lead', 'CTO'], required: true },
+    jobLocation: { type: String, enum: [...jobLocation_option], required: true },
+    workingTime: { type: String, enum: [...workingTime_option], required: true },
+    seniorityLevel: { type: String, enum: [...level_option], required: true },
     jobDescription: { type: String, required: true },
     technicalSkills: { type: [String], required: true },
     softSkills: { type: [String], required: true },
