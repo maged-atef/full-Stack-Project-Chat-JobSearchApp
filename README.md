@@ -30,7 +30,7 @@ Ensure you have **Node.js** and **MongoDB** installed on your system.
    npm install
    ```
 
-3. Start the application:
+3. Start the application: ➡ naviaget to /backend then type
 
    npm run start  
  
