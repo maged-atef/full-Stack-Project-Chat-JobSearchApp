@@ -1,6 +1,6 @@
-# Job Searching App
+#🟢 Job Searching App
 
-## Overview
+## ✔ Overview
 The **Job Searching App** is a full-featured backend application built with **Node.js** and **Express.js**. It provides job seekers with a seamless experience to search, apply, and manage job listings. The app includes authentication, real-time notifications, file uploads, GraphQL support, background jobs, and more.
 
 ## Features
