@@ -22,7 +22,7 @@ Ensure you have **Node.js** and **MongoDB** installed on your system.
 ### Setup
 1. Clone the repository:
    ```sh
-   git clone https://github.com/maged-atef/job-searching-app.git
+   https://github.com/maged-atef/full-Stack-Project-Chat-JobSearchApp.git
    cd job-searching-app
    ```
 2. Install dependencies:
