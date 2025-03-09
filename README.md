@@ -72,7 +72,7 @@ MAIL_SECURE =
    npm install
  ```
 
-5. ## [POSTMAN documentation] can be accessed from here (https://documenter.getpostman.com/view/36638852/2sAYdoEmni#4df10acf-9964-4dc0-9ad4-55bc8d2a2fa7)
+5. ## [POSTMAN documentation](https://documenter.getpostman.com/view/36638852/2sAYdoEmni#4df10acf-9964-4dc0-9ad4-55bc8d2a2fa7)
 
 
 
