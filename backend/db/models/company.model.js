@@ -1,4 +1,5 @@
 import { Schema, model, Types } from "mongoose";
+import Job from "./job.model.js";
 
 export const hrsStaff = ['hrManager', 'hrDirector', 'hrEmployee']
 
@@ -30,10 +31,24 @@ const companySchema = new Schema({
             public_id:{type:String, defualt :"id"}
         }
     },
-    approvedByAdmin: { type: Boolean, default:false },
-    deletedAt: {type: Date, default: null} // Reference to User model
+    approvedByAdmin: { type: Boolean, default:false }
+   
 }, { timestamps: true });
 
+companySchema.post("deleteOne", { query: false, document: true }, async (doc, next) => {
+    const parentRecord = doc._id;
+    console.log({ idParent: parentRecord })
+    const RelatedRecord = await Job.find({companyid: parentRecord.toString()})
+    
+    if(RelatedRecord.length >0){
+        for (const record of RelatedRecord) {
+            console.log(record._id)
+            await record.deleteOne()
+        }
+    }
+
+    return next()
+})
 const Company = model('Company', companySchema);
 
 export default Company;

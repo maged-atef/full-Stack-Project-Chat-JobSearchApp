@@ -30,8 +30,8 @@ import User from './db/models/user.model.js';
     io.use(async (socket, next) => {
         const user_token = socket.handshake.auth.token
         console.log('usertoken: ',user_token)
-        
-        let { id } = jwt.verify(user_token.split(" ")[1], process.env.SECRETKEY)
+        const token = user_token.split(' ')[1]
+        let { id } = jwt.verify(token, process.env.SECRETKEY)
         console.log('id : ',id)
         const find_id = await User.findOne({ _id: id })
         if (!find_id) return console.log('error not exists user ')

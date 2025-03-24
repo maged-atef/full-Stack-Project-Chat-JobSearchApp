@@ -74,6 +74,9 @@ export const updateJob = asyncHandler(async (req, res, next) => {
     if (!job) {
         return next(new Error("Job not found"));
     }
+    console.log({ added: job.addedBy })
+    console.log({ user: req.user._id })
+    if (req.user._id.toString() != job.addedBy.toString()) return next(new Error("only owner can update the job info"));
     job.jobTitle = jobTitle || job.jobTitle;
     job.jobLocation = jobLocation || job.jobLocation;
     job.workingTime = workingTime || job.workingTime;
@@ -106,6 +109,7 @@ export const deleteJob = asyncHandler(async (req, res, next) => {
     if (!job) {
         return next(new Error("Job not found"));
     }
+    if (req.user._id.toString() != job.addedBy.toString()) return next(new Error("only owner can delete the job info"));
 
     const Check_applicants_forthis_job = await application.find({ job: jobId }, { _id: 0, resume: 0, job: 0, __v: 0 }).populate({ path: 'user', select: '-_id ,firstName lastName email' })
     if (Check_applicants_forthis_job) {
@@ -242,7 +246,7 @@ export const findJobsForComanyinDate = async (req, res, next) => {
     const job_data = await Job.findOne({ companyid: companyid }).select("jobTitle")
     if (!job_data) return res.status(400).json({ msg: 'not jobs for this company' })
 
-    
+
 
 
     // collect data 
@@ -253,7 +257,7 @@ export const findJobsForComanyinDate = async (req, res, next) => {
         path: 'companyid',
         select: 'companyName -_id'
     }).populate({
-        path:'job', 
+        path: 'job',
         select: 'jobTitle -_id'
     })
 
@@ -297,3 +301,24 @@ export const findJobsForComanyinDate = async (req, res, next) => {
     // return res.status(200).json({ success: true , data: app_info})
 
 }
+
+
+
+// *------<< find all applicant for a job  >>-------------
+export const findall_applicant_forjob = asyncHandler(async (req, res, next) => {
+
+    let { pageSkip, limit } = req.body
+    const { jobId } = req.params;
+    const userId = req.user._id;
+
+    const all_applicants = await application.find({ _id: jobId }).populate({
+        path: 'user',
+        select: ` -_id`
+
+    }).skip(pageSkip).limit(limit).sort({ createdAt: -1 });
+    if (!all_applicants) return res.status(400).json({ success: false, msg: 'not data found' })
+    res.status(201).json({
+        msg: 'Application submitted successfully',
+        data: all_applicants
+    });
+});

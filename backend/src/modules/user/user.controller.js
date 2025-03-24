@@ -17,7 +17,7 @@ router.post("/confirm", userService.confirmEmail);
 router.post("/signin", validate(userValidation.signinValidation), userService.signin);
 router.patch("/update", auth(['admin']), validate(userValidation.updateAccountValidation), userService.update);
 router.get("/getacc", auth(['admin']), userService.getAcc);
-router.get("/profile/:id", userService.GetProfile);
+router.get("/profile/:id",auth(['User']) ,userService.GetProfile);
 router.post("/requestPasswordReset", validate(userValidation.requestPasswordResetValidation), userService.requestPasswordReset);
 router.post("/resetPassword", validate(userValidation.resetPasswordValidation), userService.resetPassword);
 router.patch('/updatePassword', auth(["admin", "User"]), validate(userValidation.updatePasswordValidation), userService.updatePassword);

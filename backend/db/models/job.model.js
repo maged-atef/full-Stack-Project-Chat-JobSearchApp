@@ -14,13 +14,14 @@ const jobSchema = new Schema({
     technicalSkills: { type: [String], required: true },
     softSkills: { type: [String], required: true },
     addedBy: { type: Types.ObjectId, ref: 'User', required: true },//HR ID
-    updatedBy: {type: Types.ObjectId , ref :'User' },//HR id 
-    closed: {type: Boolean ,default:false},
-    companyid: { type: Types.ObjectId, ref: 'Company' ,required:true},
+    updatedBy: { type: Types.ObjectId, ref: 'User' },//HR id 
+    closed: { type: Boolean, default: false },
+    companyid: { type: Types.ObjectId, ref: 'Company', required: true },
 
-   
+
 
 }, { timestamps: true });
+
 
 const Job = model('Job', jobSchema);
 

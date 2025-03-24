@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import { sendMail } from "../../service/email.js";
 import CryptoJS from "crypto-js";
 import application from '../../../db/models/application.model.js'
+import CLOUD from "../../service/cloudinary.js";
 
 
 
@@ -56,7 +57,17 @@ export const signup = asyncHandler(async (req, res, next) => {
         role,
         otp,
         otpExpiry,
-        
+        profilePicture: {
+            secure_url: " profile",
+            public_id: "id"
+        },
+        coverPic: {
+            secure_url: " cover",
+            public_id: "id"
+        },
+
+
+
     });
 
     res.status(201).json({ message: 'User created successfully', otp: newUser.otp });
@@ -101,7 +112,7 @@ export const signin = asyncHandler(async (req, res, next) => {
     res.status(200).json({
         Acesstoken: `Bearer ${Accesstoken}`,
         RefreshToken: `Bearer ${refreshtoken}`,
-        success: true, 
+        success: true,
         msg: 'done',
         username: user.firstName
     });
@@ -138,7 +149,7 @@ export const update = asyncHandler(async (req, res, next) => {
         const mobileCheck = mobileRegex.test(mobileNumber)
         if (!mobileCheck) return res.status(400).json({ Success: false, msg: 'invalid phone formate' })
 
-        const DateRegex =/^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/
+        const DateRegex = /^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/
         const DateCheck = DateRegex.test(DOB)
         if (!DateCheck) return res.status(400).json({ Success: false, msg: 'invalid DOB formate' })
         user.mobileNumber = mobileNumber
@@ -174,13 +185,14 @@ export const deleteAccount = asyncHandler(async (req, res, next) => {
 export const getAcc = asyncHandler(async (req, res, next) => {
     let { id } = req.body
 
-    const user = await User.findById(id, { password: 0 });
-
-    if (!user.deletedAt == null) {
-        return res.status(400).json({ success: false, msg: 'this account has been deleted' })
-    }
+    const user = await User.findById(id).
+        select('firstName lastName mobileNumber email profilePic coverPic -_id');
     if (!user) {
         return next(new Error("User not found"));
+    }
+
+    if (user.deletedAt !== null) {
+        return res.status(400).json({ success: false, msg: 'this account has been deleted' , Deleted_DATA: user })
     }
 
     user.mobileNumber = CryptoJS.AES.decrypt(user.mobileNumber, process.env.SECRETKEY).toString(CryptoJS.enc.Utf8)
@@ -191,9 +203,12 @@ export const getAcc = asyncHandler(async (req, res, next) => {
 //* ----->  Get Profile by ID
 export const GetProfile = asyncHandler(async (req, res, next) => {
     const userId = req.params.id;
-    const user = await User.findById(userId ,{password: 0 });
+    const user = await User.findById(userId, { password: 0 });
     if (!user) {
         return next(new Error("User not found"));
+    }
+    if (user.deletedAt != null) {
+        return res.status(400).json({ success: false, msg: 'you must be admin to view deleted account' })
     }
     res.status(200).json({ user });
 });
@@ -281,14 +296,19 @@ export const upload_profile_pic = async (req, res, next) => {
     const file = req.file
     const userId = req.user._id
     const user = await User.findOne(req.user._id)
-    if(!req.file) return res.status(400).json({success: false , msg: 'no profile picture is provided'})
-
-    user.profilePic = {
-        seccure_url: req.file.path,
-        public_id: `profilepic${user._id}`
+    if (!req.file) return res.status(400).json({ success: false, msg: 'no profile picture is provided' })
+    try {
+        const uploadCloud = await CLOUD.uploader.upload(req.file.path, { folder: `user.profilePicture/` })
+        console.log(uploadCloud)
+        user.profilePicture = {
+            secure_url: uploadCloud.secure_url,
+            public_id: uploadCloud.public_id
+        }
+        await user.save()
+        return res.status(200).json({ success: true, msg: 'user profile is updated', data: user })
+    } catch (error) {
+        return res.status(400).json({ err: error.message, stack: error.stack })
     }
-    await user.save()
-    res.status(200).json({ success: true, user: userId, file: file })
 
 }
 
@@ -298,29 +318,41 @@ export const Upload_Cover_pic = async (req, res, next) => {
     const userId = req.user._id
     const user = await User.findOne(req.user._id)
 
-    if(!req.file) return res.status(400).json({success: false , msg: 'no cover picture is provided'})
-    user.coverPic = {
-        seccure_url: req.file.path,
-        public_id: `coverpic${user._id}`
+    if (!req.file) return res.status(400).json({ success: false, msg: 'no cover picture is provided' })
+    try {
+        const uploadCloud = await CLOUD.uploader.upload(req.file.path, { folder: `user.profilePicture/` })
+        console.log(uploadCloud)
+        user.coverPic = {
+            secure_url: uploadCloud.secure_url,
+            public_id: uploadCloud.public_id
+        }
+        await user.save()
+        return res.status(200).json({ success: true, msg: 'user cover is updated', data: user })
+    } catch (error) {
+        return res.status(400).json({ err: error.message, stack: error.stack })
     }
-    await user.save()
-    res.status(200).json({ success: true, user: userId, file: file })
-
 }
 
 //* -----> delete cover pic 
 export const Delete_CoverPic = async (req, res, next) => {
     const userId = req.user._id
     const user = await User.findOne(req.user._id)
-    if (user.coverPic.seccure_url.startsWith("Default")) return res.status(200).json({ success: false, msg: 'no cover picture' })
+    if (user.coverPic.secure_url.startsWith("Default")) return res.status(200).json({ success: false, msg: 'no cover picture' })
 
-    user.coverPic = {
-        seccure_url: "Default Cover picture",
-        public_id: `coverpic${user._id}`
+    try {
+        const delete_user_Cover = await CLOUD.uploader.destroy(user.coverPic.public_id)
+        user.coverPic.secure_url = "Default Cover picture"
+        user.coverPic.public_id = "Default id"
+
+        await user.save()
+
+        res.status(200).json({ success: true, msg: "user cover picture deleted", data: user })
+
+    } catch (error) {
+        return res.status(400).json({ error: error.message })
     }
-    await user.save()
 
-    res.status(200).json({ success: true, coverPic_DeletedFor_user: userId })
+
 
 }
 
@@ -329,14 +361,24 @@ export const Delete_ProfilePic = async (req, res, next) => {
     const userId = req.user._id
     const user = await User.findOne(req.user._id)
 
-    if (user.profilePic.seccure_url.startsWith("Default")) return res.status(200).json({ success: false, msg: 'no profile picture' })
-    user.profilePic = {
-        seccure_url: "Default profile picture",
-        public_id: `profilepic${user._id}`
-    }
-    await user.save()
+    if (user.profilePicture.secure_url.startsWith("Default")) return res.status(200).json({ success: false, msg: 'no profile picture' })
 
-    res.status(200).json({ success: true, profilePic_DeletedFor_user: userId })
+    try {
+        const delete_user_profile_pic = await CLOUD.uploader.destroy(user.profilePicture.public_id)
+        user.profilePicture.secure_url = "Default profile picture"
+        user.profilePicture.public_id = "Default id"
+
+        await user.save()
+
+        res.status(200).json({ success: true, msg: "user profile picture deleted", data: user })
+
+    } catch (error) {
+        return res.status(400).json({ error: error.message })
+    }
+
+
+
+
 
 }
 

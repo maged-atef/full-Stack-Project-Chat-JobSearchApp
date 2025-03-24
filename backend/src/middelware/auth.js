@@ -18,7 +18,7 @@ export const auth = (roles = []) => {
             }
 
             const newToken = token.split(" ")[1];
-            const decoded = jwt.verify(newToken,"SECRETKEY");
+            const decoded = jwt.verify(newToken,process.env.SECRETKEY);
             if (!decoded?.id) {
                 return res.status(400).json({ msg: "Invalid payload" });
             }

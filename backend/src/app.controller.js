@@ -4,6 +4,8 @@ import jobRouter from './modules/job/job.controller.js';
 import companyRouter from './modules/company/company.controller.js';
 import msgRouter from './modules/message/msg.controller.js'
 
+
+
 // * ====> import Db connection
 import connectiontDB from '../db/connectionDB.js';
 import helmet from 'helmet';
@@ -19,7 +21,7 @@ import { sendMail } from './service/email.js';
 // *---> Start App Here
 export const bootstrap = async (app, express) => {
 
-
+   
     // ^ Variables Global 
      const methods_Allowed = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']
      const allowed_Headers =["content-type", "Authorization"]

@@ -16,5 +16,6 @@ router.get('/specific_company', auth(['admin', 'User']), jobService.getJobsByCom
 router.get('/jobsfilter', auth(['admin', 'User']), jobService.getFilteredJobs);
 router.post('/apply/:jobId/:companyid', auth(['admin']), multerLocal().single("resume"), jobService.applyToJob);
 router.get('/jobforcompany/:companyid/:day',  jobService.findJobsForComanyinDate);
+router.get('/getallapplicatsforjob/:jobId', auth(['admin']) ,jobService.findall_applicant_forjob);
 
 export default router;

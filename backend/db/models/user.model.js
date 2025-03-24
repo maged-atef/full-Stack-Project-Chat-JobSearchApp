@@ -14,36 +14,47 @@ const userSchema = new Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     provider: { type: String, required: true, enum: [...provider_option], default: "system" },
-    gender: { type: String, enum: [...gnder_option]},
+    gender: { type: String, enum: [...gnder_option] },
     DOB: { type: Date, required: true },
-    mobileNumber: { type: String, required:true },
+    mobileNumber: { type: String, required: true },
     role: { type: String, enum: [...role_option], required: true },
     confirmed: { type: Boolean, default: false },
     deletedAt: { type: Date, default: null },
     bannedAt: { type: Date, default: null },
     updatedby: { type: Types.ObjectId, ref: 'User' },
     changeCredentialTime: { type: Date, default: null },
-    profilePic: {
-        type: {
-            seccure_url: { type: String ,default:null},
+    profilePicture: {type: {
+            secure_url: { type: String ,default: null},
             public_id: { type: String ,default:null}
-        }
-    },
+        }},
     coverPic: {
         type: {
-            seccure_url: { type: String ,default:null},
-            public_id: { type: String , default:null}
+            secure_url: { type: String , default: null},
+            public_id: { type: String ,default:null}
         }
     },
     otp: { type: String },
     otpExpiry: { type: Date },
-   googleId:{type: String, optional: true},
-   profilePic:{type:String}
+    googleId: { type: String, optional: true },
+    profilePic: { type: String }
 
-}, { timestamps: true });
+}, { timestamps: true ,toJSON:{virtuals:true},toObject:{virtuals:true}});
 
 userSchema.virtual('username').get(function () {
     return `${this.firstName} ${this.lastName}`;
+})
+
+userSchema.post("deleteOne",{query: false , document: true}, async(doc, next)=>{
+  
+  const ParentRecord = doc._id; 
+  const RelatedRecord = await this.constructor.find({parentRecord})
+  if(RelatedRecord.length){
+      for (const record of RelatedRecord) {
+          await record.deleteOne()
+      }
+  }
+
+    return next()
 })
 
 const User = model('User', userSchema);

@@ -1,9 +1,13 @@
 import { sendMail } from "../../service/email.js";
 import Company from "../../../db/models/company.model.js";
 import Job from "../../../db/models/job.model.js";
+import CLOUD from "../../service/cloudinary.js";
 import Application from "../../../db/models/application.model.js";
-
+import path from 'path'
 import application from "../../../db/models/application.model.js";
+import dotenv from 'dotenv'
+dotenv.config({path:path.resolve('.env')})
+console.log(path.resolve('.env'))
 
 // Async Handler
 export const asyncHandler = (fn) => {
@@ -78,12 +82,10 @@ export const deleteCompany = asyncHandler(async (req, res, next) => {
     if (!company) {
         return next(new Error("Company not found"));
     }
-    if(company.deletedAt !=null){ 
-        return res.status(400).json({success: false , msg: 'the company you searching for is already deleted'})
-    }
-   const now = new Date(); 
-   company.deletedAt = now 
-   company.save() 
+
+  await company.deleteOne()
+
+
     await sendMail(
         req.user.email,
         "Company Deletion Confirmation",
@@ -169,12 +171,19 @@ export const uploadlogo = async (req, res, next) => {
 
     if(!req.file) return res.status(400).json({success: false , msg: "no logo picture provided"})
 
-    company.logo = {
-        secure_url: req.file.path,
-        public_id: `logopic${company._id}`
-    }
-    await company.save()
-    res.status(200).json({ success: true, msg: 'logo company changed '})
+      try {
+        const uploadCloud = await CLOUD.uploader.upload(req.file.path, {folder: `/logoPicture`})
+       
+        company.logo = {
+            secure_url: uploadCloud.secure_url,
+            public_id: uploadCloud.public_id
+        }
+        await company.save()
+       return res.status(200).json({ success: true, msg: 'logo company changed ' , data:company})
+      } catch (error) {
+        return res.status(400).json({err: error.message, stack: error.stack})
+      }
+   
 
 }
 
@@ -185,12 +194,22 @@ export const uploadcover= async (req, res, next) => {
     const {companyId} = req.params
     const company = await Company.findOne({_id: companyId})
     if(!req.file) return res.status(400).json({success: false , msg: "no cover picture provided"})
-    company.coverPic = {
-        secure_url: req.file.path,
-        public_id: `coverpic${company._id}`
-    }
-    await company.save()
-    res.status(200).json({ success: true, msg: 'cover is updated' })
+
+        
+      try {
+        const uploadCloud = await CLOUD.uploader.upload(req.file.path, {folder: `/coverPicture`})
+       
+        company.coverPic = {
+            secure_url: uploadCloud.secure_url,
+            public_id: uploadCloud.public_id
+        }
+        await company.save()
+       return res.status(200).json({ success: true, msg: 'cover is updated' , data:company})
+      } catch (error) {
+        return res.status(400).json({err: error.message, stack: error.stack})
+      }
+
+
 
 }
 
@@ -203,14 +222,18 @@ export const delcover = async (req, res, next) => {
 
     if (company.coverPic.secure_url.startsWith("Default")) return res.status(200).json({ success: false, msg: 'no cover picture' })
 
-        company.coverPic = {
-        secure_url: "Default Cover picture",
-        public_id: `coverpic${company._id}`
-    }
+    try {
+        const deleteCover = await CLOUD.uploader.destroy(company.coverPic.public_id)
+        company.coverPic.secure_url = "Default Cover picture"
+        company.coverPic.public_id = "Default id"
+      
     await company.save()
 
-    res.status(200).json({ success: true, msg:"cover picture deleted"})
+    res.status(200).json({ success: true, msg:"cover picture deleted" , data:company})
 
+    } catch (error) {
+        return res.status(400).json({error: error.message})
+    }
 }
 
 //* -----> delete logo 
@@ -222,13 +245,18 @@ export const dellogo = async (req, res, next) => {
 
     if (company.logo.secure_url.startsWith("Default")) return res.status(200).json({ success: false, msg: 'no cover picture' })
 
-        company.logo = {
-        secure_url: "Default Cover picture",
-        public_id: `coverpic${company._id}`
-    }
-    await company.save()
-
-    res.status(200).json({ success: true, msg:"cover picture deleted"})
+        try {
+            const deletelogo = await CLOUD.uploader.destroy(company.logo.public_id)
+            company.logo.secure_url = "Default logo picture"
+            company.logo.public_id = "Default id"
+          
+        await company.save()
+    
+        res.status(200).json({ success: true, msg:"cover picture deleted" , data:company})
+    
+        } catch (error) {
+            return res.status(400).json({error: error.message})
+        }
 
 }
 

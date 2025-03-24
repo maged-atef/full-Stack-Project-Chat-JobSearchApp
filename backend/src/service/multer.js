@@ -2,21 +2,23 @@ import multer from 'multer';
 import { nanoid } from 'nanoid';
 import path from 'path'
 import fs from 'fs'
-
 import { fileURLToPath } from 'url';
 
 
 
-export const multerLocal = () => {
-   
-        const __filename = fileURLToPath(import.meta.url);
-        const __dirname = path.dirname(__filename);
 
-        const uploadDir = path.join(__dirname, '../uploads'); // Adjust path if needed
-        if (!fs.existsSync(uploadDir)) {
-            fs.mkdirSync(uploadDir, { recursive: true }); // Ensure folder exists
-        }
-   
+
+
+export const multerLocal = () => {
+
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
+
+    const uploadDir = path.join(__dirname, '../uploads'); // Adjust path if needed
+    if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true }); // Ensure folder exists
+    }
+
     const storage = multer.diskStorage({
         destination: function (req, file, cb) {
             cb(null, uploadDir);
