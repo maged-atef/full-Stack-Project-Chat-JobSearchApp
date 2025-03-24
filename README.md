@@ -1,9 +1,9 @@
-# Job Searching App
+## 🟢 Job Searching App
 
-## Overview
+## ✔ Overview
 The **Job Searching App** is a full-featured backend application built with **Node.js** and **Express.js**. It provides job seekers with a seamless experience to search, apply, and manage job listings. The app includes authentication, real-time notifications, file uploads, GraphQL support, background jobs, and more.
 
-## Features
+## ⚡ Features
 - **User Authentication:** JWT-based authentication with OAuth (Google login supported).
 - **Job Management:** CRUD operations for job postings.
 - **Real-time Notifications:** WebSockets for instant updates.
@@ -30,12 +30,56 @@ Ensure you have **Node.js** and **MongoDB** installed on your system.
    npm install
    ```
 
-3. Start the application:
-
+3. Start the application backend side: ➡ naviaget to /backend then type
+```sh
+   cd /backend
    npm run start  
- 
+ ```
+
+⛔ create .env file on backend folder 
+```sh
+   
+# Database Info
+MONGODB_URI = 
+
+# Google Login authentication
+CLIENT_ID = 
+CLIENT_SECRET = 
+
+# Express Info
+HOST = http://127.0.0.1:3000/
+EXPRESSPORT = 3000
+
+# App Name
+APPNAME= 
+
+# Hashing
+SECRETKEY = 
 
 
+# Google Authentication for Send Mail 
+
+USER = 
+PASS = 
+MAIL_HOST = 
+MAIL_PORT = 
+MAIL_SECURE = 
+
+```
+4. Start the application frontend side : ➡ naviaget to /frontend then type
+```sh
+   cd /frontend
+   npm install
+ ```
+
+5. ## [POSTMAN documentation](https://documenter.getpostman.com/view/36638852/2sAYdoEmni#4df10acf-9964-4dc0-9ad4-55bc8d2a2fa7)
+
+6. ## GraphQL Request
+  ```sh
+   1️⃣ use post man to create new GraphQL request
+   2️⃣ http://localhost:3000/graphql
+  ```
+8. 
 
 
 ## Dependencies
